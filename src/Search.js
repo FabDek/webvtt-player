@@ -7,7 +7,8 @@ const Search = ({ query, updateQuery }) => {
     <div className={style.search}>
       <div className={style.container}>
         <span className={style.icon}>🔍</span>
-        <input 
+        <input
+          placeholder="Rechercher dans la transcription..."
           value={query}
           onChange={e => updateQuery(e.target.value)} />
       </div>

@@ -36,6 +36,7 @@ class Player extends React.Component {
       metatrack = this.metatrack.current.track
     }
     const preload = this.props.preload ? "true" : "false"
+    const hasTranscript = this.props.transcript && this.props.transcript.trim() !== ""
     const metadata = this.props.metadata
       ? <Metadata
         url={this.props.metadata}
@@ -43,37 +44,44 @@ class Player extends React.Component {
         track={metatrack} />
       : ""
     return (
-      <div className="webvtt-player">
-        <div className="media">
-          <div className="player">
-            <audio
-              controls
-              crossOrigin="anonymous"
-              onLoad={this.onLoaded}
-              preload={preload}
-              ref={this.audio}>
-              <source src={this.props.audio} />
-              <track default
-                kind="subtitles"
-                src={this.props.transcript}
-                ref={this.track} />
-              <track default
-                kind="metadata"
-                src={this.props.metadata}
-                ref={this.metatrack} />
-            </audio>
+        <div className="webvtt-player">
+          <div className="media">
+            <div className="player">
+              <audio
+                  controls
+                  crossOrigin="anonymous"
+                  onLoad={this.onLoaded}
+                  preload={preload}
+                  ref={this.audio}>
+                <source src={this.props.audio}/>
+                <track default
+                       kind="subtitles"
+                       src={this.props.transcript}
+                       ref={this.track}/>
+                <track default
+                       kind="metadata"
+                       src={this.props.metadata}
+                       ref={this.metatrack}/>
+              </audio>
+            </div>
+            {hasTranscript ? (
+                <>
+                  <Search query={this.state.query} updateQuery={this.updateQuery}/>
+                  <div className="tracks">
+                    <Transcript
+                        url={this.props.transcript}
+                        seek={this.seek}
+                        track={track}
+                        query={this.state.query}/>
+                    {metadata}
+                  </div>
+                  <Search query={this.state.query} updateQuery={this.updateQuery}/>
+                </>
+            ) : (
+                <p>Aucune transcription pour cet entretien</p>
+            )}
           </div>
-          <div className="tracks">
-            <Transcript 
-              url={this.props.transcript} 
-              seek={this.seek} 
-              track={track} 
-              query={this.state.query} />
-            {metadata}
-          </div>
-          <Search query={this.state.query} updateQuery={this.updateQuery} />
         </div>
-      </div>
     )
   }
 
