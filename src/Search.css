@@ -1,18 +1,24 @@
 .search {
-  border-top: thin solid #ccc;
-  padding: 5px 5px 5px 5px;
+  /*border-top: thin solid #ccc;*/
+  padding: 5px;
   font-size: 14pt;
-  margin-top: 5px;
+  /*margin-top: 5px;*/
 }
 
 .search .container {
+  padding: 5px;
   border: thin solid #ccc;
+  border-radius: 5px;
 }
 
 .search input {
   font-size: 12pt;
   border: none;
   width: 90%;
+}
+
+.search input::placeholder {
+  color: #b6b6b6;
 }
 
 .search input:focus {
