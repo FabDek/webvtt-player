@@ -7,7 +7,7 @@ const root = document.getElementById('webvtt-player')
 ReactDOM.render(
   <Player
     audio={root.dataset.audio}
-    transcript={null}
+    transcript={root.dataset.transcript}
     metadata={root.dataset.metadata}
     preload={true} />,
   root
