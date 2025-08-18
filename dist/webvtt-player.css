@@ -22,7 +22,45 @@
 .webvtt-player .text {
   margin-left: 110px;
 }
-.webvtt-player .transcript {
+.webvtt-player .point {
+  padding: 5px;
+}
+
+.webvtt-player .time {
+  width: 110px;
+  float: left;
+  font-size: 10pt;
+  line-height: 14pt;
+  cursor: pointer;
+}
+
+.webvtt-player .text {
+  margin-left: 110px;
+}
+
+.webvtt-player .title {
+  font-weight: bold;
+  font-size: inherit;
+  margin: 0;
+  cursor: pointer;
+}
+
+.webvtt-player .titleAlt {
+  font-style: italic;
+  font-weight: normal;
+  font-size: inherit;
+  margin: 0;
+}
+
+.webvtt-player .field {
+  margin-top: 5px;
+}
+
+.webvtt-player .field span {
+  font-style: italic;
+}
+.webvtt-player .track {
+  flex: 6;
   height: 90vh;
   padding: 10px;
   overflow-y: scroll;
@@ -42,6 +80,9 @@
   background-color: #ccc;
 }
 
+.webvtt-player .tracks {
+  display: flex;
+}
 
 .webvtt-player .controls {
   padding: 5px;
@@ -55,20 +96,28 @@
   width: 70%;
 }
 .search {
-  border-top: thin solid #ccc;
-  padding: 5px 5px 5px 5px;
+  padding: 5px;
   font-size: 14pt;
-  margin-top: 5px;
 }
 
 .search .container {
+  padding: 5px;
   border: thin solid #ccc;
+  border-radius: 5px;
 }
 
 .search input {
   font-size: 12pt;
   border: none;
   width: 90%;
+}
+
+.search input::-moz-placeholder {
+  color: #b6b6b6;
+}
+
+.search input::placeholder {
+  color: #b6b6b6;
 }
 
 .search input:focus {

@@ -74,7 +74,7 @@ class Player extends React.Component {
               <audio
                   controls
                   crossOrigin="anonymous"
-                  onLoad={this.onLoaded}
+                  onLoadedData={this.onLoaded}
                   preload={preload}
                   ref={this.audio}>
                 <source src={this.props.audio} />
@@ -136,6 +136,14 @@ class Player extends React.Component {
     this.setState({ query })
   }
 }
+
+Player.propTypes = {
+  transcript: PropTypes.string.isRequired,
+  metadata: PropTypes.string,
+  audio: PropTypes.string,
+  preload: PropTypes.string,
+  // Ajoute ici toutes les autres props utilisées
+};
 
 
 export default Player
