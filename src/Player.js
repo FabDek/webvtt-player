@@ -112,18 +112,42 @@ class Player extends React.Component {
     )
   }
 
+
   onLoaded() {
-    this.setState({ loaded: true, hasTranscript: true })
+    const e = this.track.current
+    if (e && e.track) {
+      console.log("[Player:onLoaded] Track trouvée:", e.track)
+      console.log("[Player:onLoaded] Nombre de cues:", e.track.cues ? e.track.cues.length : "aucun")
+
+      if (e.track.cues && e.track.cues.length > 0) {
+        this.setState({ loaded: true, hasTranscript: true })
+        console.log("[Player:onLoaded] ✅ Transcript chargé et valide")
+      } else {
+        this.setState({ loaded: false, hasTranscript: false })
+        console.warn("[Player:onLoaded] ⚠️ Aucun cue détecté → transcript vide ou invalide")
+      }
+    } else {
+      console.error("[Player:onLoaded] ❌ Impossible d’accéder à la track")
+      this.setState({ loaded: false, hasTranscript: false })
+    }
   }
 
   checkIfLoaded(tries = 0) {
     tries += 1
     const e = this.track.current
+
+    console.log(`[Player:checkIfLoaded] Tentative ${tries}`)
+
     if (e && e.track && e.track.cues && e.track.cues.length > 0) {
+      console.log("[Player:checkIfLoaded] ✅ Transcript détecté après", tries, "tentatives")
       this.onLoaded()
-    } else if (!this.state.loaded) {
+    } else if (!this.state.loaded && tries < 20) {
       const wait = 25 * Math.pow(tries, 2)
+      console.log(`[Player:checkIfLoaded] Pas encore de cues, nouvelle tentative dans ${wait} ms`)
       setTimeout(this.checkIfLoaded, wait, tries)
+    } else {
+      console.warn("[Player:checkIfLoaded] ⚠️ Aucune transcription trouvée après toutes les tentatives")
+      this.setState({ hasTranscript: false })
     }
   }
 
@@ -138,11 +162,11 @@ class Player extends React.Component {
 }
 
 Player.propTypes = {
-  transcript: PropTypes.string.isRequired,
-  metadata: PropTypes.string,
   audio: PropTypes.string,
-  preload: PropTypes.string,
-  // Ajoute ici toutes les autres props utilisées
+  transcript: PropTypes.string,
+  metadata: PropTypes.string,
+  preload: PropTypes.bool,
+  query: PropTypes.string
 };
 
 
