@@ -10,7 +10,7 @@ class Player extends React.Component {
     super()
     this.state = {
       loaded: false,
-      hasTranscript: null, // null = pas encore vérifié, true/false après test
+      hasTranscript: null, // null = en cours, true = dispo, false = aucune
       currentTime: 0,
       query: ''
     }
@@ -25,22 +25,22 @@ class Player extends React.Component {
   }
 
   componentDidMount() {
-    // Vérif rapide si pas de transcript fourni
     if (!this.props.transcript || this.props.transcript.trim() === "") {
       this.setState({ hasTranscript: false })
       return
     }
 
-    // Vérif rapide du contenu du fichier .vtt
+    // On commence par afficher "Chargement..."
+    this.setState({ hasTranscript: null })
+
+    // Vérification rapide du contenu du fichier .vtt
     fetch(this.props.transcript)
         .then(res => res.text())
         .then(text => {
           const hasContent = text.trim().length > 0 && /-->/g.test(text)
           if (!hasContent) {
-            // Pas de cues → on affiche direct "Aucune transcription"
             this.setState({ hasTranscript: false })
           } else {
-            // Lancer la détection normale
             this.checkIfLoaded()
           }
         })
@@ -49,7 +49,7 @@ class Player extends React.Component {
         })
   }
 
-  render () {
+  render() {
     let track = null
     let metatrack = null
 
@@ -61,10 +61,7 @@ class Player extends React.Component {
     const preload = this.props.preload ? "true" : "false"
 
     const metadata = this.props.metadata
-        ? <Metadata
-            url={this.props.metadata}
-            seek={this.seek}
-            track={metatrack} />
+        ? <Metadata url={this.props.metadata} seek={this.seek} track={metatrack} />
         : ""
 
     return (
@@ -78,20 +75,20 @@ class Player extends React.Component {
                   preload={preload}
                   ref={this.audio}>
                 <source src={this.props.audio} />
-                <track default
-                       kind="subtitles"
-                       src={this.props.transcript}
-                       ref={this.track} />
-                <track default
-                       kind="metadata"
-                       src={this.props.metadata}
-                       ref={this.metatrack} />
+                <track default kind="subtitles" src={this.props.transcript} ref={this.track} />
+                <track default kind="metadata" src={this.props.metadata} ref={this.metatrack} />
               </audio>
             </div>
 
-            {this.state.hasTranscript === false ? (
-                <p>Aucune transcription</p>
-            ) : this.state.hasTranscript === true ? (
+            {this.state.hasTranscript === null && (
+                <p>Chargement de la transcription...</p>
+            )}
+
+            {this.state.hasTranscript === false && (
+                <p>Aucune transcription disponible</p>
+            )}
+
+            {this.state.hasTranscript === true && (
                 <>
                   <Search query={this.state.query} updateQuery={this.updateQuery} />
                   <div className="tracks">
@@ -99,35 +96,26 @@ class Player extends React.Component {
                         url={this.props.transcript}
                         seek={this.seek}
                         track={track}
-                        query={this.state.query} />
+                        query={this.state.query}
+                    />
                     {metadata}
                   </div>
-                  <Search query={this.state.query} updateQuery={this.updateQuery} />
                 </>
-            ) : (
-                <p>Chargement de la transcription...</p>
             )}
           </div>
         </div>
     )
   }
 
-
   onLoaded() {
     const e = this.track.current
     if (e && e.track) {
-      console.log("[Player:onLoaded] Track trouvée:", e.track)
-      console.log("[Player:onLoaded] Nombre de cues:", e.track.cues ? e.track.cues.length : "aucun")
-
       if (e.track.cues && e.track.cues.length > 0) {
         this.setState({ loaded: true, hasTranscript: true })
-        console.log("[Player:onLoaded] ✅ Transcript chargé et valide")
       } else {
         this.setState({ loaded: false, hasTranscript: false })
-        console.warn("[Player:onLoaded] ⚠️ Aucun cue détecté → transcript vide ou invalide")
       }
     } else {
-      console.error("[Player:onLoaded] ❌ Impossible d’accéder à la track")
       this.setState({ loaded: false, hasTranscript: false })
     }
   }
@@ -136,17 +124,12 @@ class Player extends React.Component {
     tries += 1
     const e = this.track.current
 
-    console.log(`[Player:checkIfLoaded] Tentative ${tries}`)
-
     if (e && e.track && e.track.cues && e.track.cues.length > 0) {
-      console.log("[Player:checkIfLoaded] ✅ Transcript détecté après", tries, "tentatives")
       this.onLoaded()
     } else if (!this.state.loaded && tries < 20) {
       const wait = 25 * Math.pow(tries, 2)
-      console.log(`[Player:checkIfLoaded] Pas encore de cues, nouvelle tentative dans ${wait} ms`)
       setTimeout(this.checkIfLoaded, wait, tries)
     } else {
-      console.warn("[Player:checkIfLoaded] ⚠️ Aucune transcription trouvée après toutes les tentatives")
       this.setState({ hasTranscript: false })
     }
   }
@@ -168,6 +151,5 @@ Player.propTypes = {
   preload: PropTypes.bool,
   query: PropTypes.string
 };
-
 
 export default Player
