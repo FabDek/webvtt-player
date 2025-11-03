@@ -6,8 +6,8 @@ import Search from './Search'
 import './Player.css'
 
 class Player extends React.Component {
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
     this.state = {
       loaded: false,
       hasTranscript: null, // null = en cours, true = dispo, false = aucune
