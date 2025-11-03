@@ -100,6 +100,7 @@ class Player extends React.Component {
                     />
                     {metadata}
                   </div>
+                  <Search query={this.state.query} updateQuery={this.updateQuery} />
                 </>
             )}
           </div>
